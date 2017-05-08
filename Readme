@@ -1,0 +1,88 @@
+   Marcu Denis-George
+   332CA
+
+                           Photo Filter
+
+
+    1. Arbore de acoperire
+
+  Plecam din radacina (procesul cu rank 0) si trimitem vecinilor sai rank-ul 0,
+apoi asteptam un mesaj de confirmare de la acestia cu parintele lor. Daca
+parintele primit este chiar 0, atunci procesul de la care a primit este copilul
+sau.
+
+  Initial, celelalte procese asteapta sa primeasca un mesaj cu parintele. Daca
+nu are setat parintele, il seteaza si apoi va trimite parintele sau inapoi
+procesului respectiv. In paralel, procesul de la care am primit va verifica
+daca el este parintele si daca da, il va adauga in lista de copii.
+
+  In continuare, fiecare proces isi va trimite rank-ul proceselor vecine,
+primind o confirmare cu parintele lor. Daca parintele este chiar el, atunci va
+adauga procesul vecin in lista de copii.
+
+
+    2. Deplasarea fasiilor pana in frunze
+  
+  Procesul radacina citeste matricea imaginii si o va imparti in mod egal 
+copiilor sai. Dupa care va calcula numarul de blocuri, apoi va trimite copiilor
+numarul de linii, nr de coloane si blocul (fasia).
+
+ Celelalte procese asteapta sa primeasca n, m si blocul. Daca n este -1, atunci
+procesul este semnalat ca nu va primi niciun bloc, altfel, va primi un nou bloc 
+si se repeta algoritmul de mai sus: va imparti blocul primit in mod egal
+copiilor sai, trimitand numarul de linii, coloane si fasia corespunzatoare.
+
+  Daca numarul de linii este mai mic decat numarul de copii, atunci procesul
+curent va trimite cate o linie in limita lor, apoi pentru restul copiilor va
+trimite un mesaj, anuntandu-i ca nu vor mai primi nicio fasie; Iar cei ce nu
+mai primesc nimic, la randul lor, isi vor anunta copiii ca nu primesc nici
+acestia nicio fasie.
+
+  In cazul in care procesul curent este o frunza, se va opri din trimiterea
+blocului si acesta va continua cu aplicarea filtrului.
+
+
+    3. Aplicarea filtrelor
+
+  Am considerat pentru fiecare filtru cate 9 coeficienti, ce sunt asociati
+elementelor din matricea 3x3 a filtrelor. Construim o noua matrice in care vom
+salva rezultatele obtinute in urma filtrelor. Pentru un pixel (element),
+extragem o matrice 3x3 avand in centru pixelul respectiv. Alcatuim suma
+produselor fiecarui element cu coeficientul corespunzator al filtrului, suma ce
+o impartim la factorul filtrului. Rezultatul obtinut va fi salvat in elementul 
+corespunzator pixelului din matricea cu rezultate.
+
+   
+    4. Trimiterea matricelor rezultat inapoi radacinei
+
+  Fiind un proces frunza, trimit numarul de linii si apoi matricea rezultat.
+Matricea rezultat se trimite fara prima linie pentru a evita ca parintele
+sa construiasca matricea cu rezultate de la copii avand in mijlocul ei
+linii de bordare. De asemenea, parintele stie ca ultima linie primita este
+o linie de bordare, de aceea cand va primi un nou bloc de la alt copil, va
+suprascrie linia respectiva.
+
+  Procesele intermediare primesc matricele cu rezultate in ordine, incepand cu
+primul copil. Daca procesul curent nu este radacina arborelui, acesta va
+trimite in continuare blocul de rezultate parintelui sau, cu precizarea ca 
+asemenea frunzelor, va trimite matricea incepand cu a doua linie.
+
+
+    5. Statistica
+
+  Consideram 2 vectori avand numarul de elemente egal cu numarul de procese. 
+Unul din vector va fi acumulator, iar celalalt este folosit pentru a primi
+statisticile de la vecini. 
+
+  Radacina va trimite un mesaj copiilor, informandu-i ca trebuie sa trimita 
+statisticile. Apoi va astepta sa primeasca statisticile, actualizand la fiecare
+statistica primita vectorul propriu de statistici.
+
+  Procesele frunza vor primi mesaj de la parinti si vor trimite inapoi 
+statistica cu numarul de linii procesate (salveaza in vectorul de statici
+pe pozitia corespunzatoare lui nr de linii procesate si trimite vectorul).
+
+  Procesele intermediare primesc mesaj de la parinte si trimit mesaj tuturor
+copiilor pentru a-i informa ca trebuie sa trimita statisticile. Apoi asteapta
+sa primeasca statisticile de la fiecare copil si actualizeaza vectorul propriu
+de statistici. Acest vector il va trimite inapoi parintelui sau.
